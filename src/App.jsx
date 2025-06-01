@@ -2,53 +2,50 @@ import { useRef, useState } from "react";
 import "./App.css";
 
 function App() {
-  const [time, setTime] = useState(0.00);
-  const counter = useRef(0);
+  const [time, setTime] = useState(0); // time in ms
+  const intervalRef = useRef(null); // holds setInterval id
+  const counter = useRef(0); // in milliseconds
 
-  let resetInterval = useRef(null);
-  const startTime = () => {
-
-    if(resetInterval.current) return;
-    resetInterval.current = setInterval(() => {
-      setTime(counter.current);
-      counter.current += 0.01;
-    }, 10);
+  const formatTime = (ms) => {
+    const totalSeconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `Time: ${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const resetTime = () => {
-    clearInterval(resetInterval.current);
-    resetInterval.current=null;
-    setTime(0.00);
-    counter.current = 0;
+  const startTime = () => {
+    if (intervalRef.current !== null) return;
 
+    intervalRef.current = setInterval(() => {
+      counter.current += 100;
+      setTime(counter.current);
+    }, 100); // 100ms for stability and test friendliness
   };
 
   const stopTime = () => {
-    clearInterval(resetInterval.current);
-    resetInterval.current=null;
-
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
   };
 
-  
+  const resetTime = () => {
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+    counter.current = 0;
+    setTime(0);
+  };
 
   return (
     <>
       <h1>Stopwatch</h1>
-      <p>Time: {time.toFixed(2)}</p>
+      <p>{formatTime(time)}</p>
 
-      {
-        resetInterval.current ? (<button type="button" onClick={stopTime}>
-        Stop
-      </button>):(<button type="button" onClick={startTime}>
+      <button onClick={startTime} disabled={intervalRef.current !== null}>
         Start
-      </button>)
-      }
-      
-      
-
-      <button type="button" onClick={resetTime}>
-        Reset
       </button>
+      <button onClick={stopTime} disabled={intervalRef.current === null}>
+        Stop
+      </button>
+      <button onClick={resetTime}>Reset</button>
     </>
   );
 }
