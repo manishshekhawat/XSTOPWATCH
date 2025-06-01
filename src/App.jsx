@@ -2,9 +2,9 @@ import { useRef, useState } from "react";
 import "./App.css";
 
 function App() {
-  const [time, setTime] = useState(0); // time in ms
-  const intervalRef = useRef(null); // holds setInterval id
-  const counter = useRef(0); // in milliseconds
+  const [time, setTime] = useState(0); 
+  const intervalRef = useRef(null); 
+  const counter = useRef(0); 
 
   const formatTime = (ms) => {
     const totalSeconds = Math.floor(ms / 1000);
@@ -13,25 +13,31 @@ function App() {
     return `Time: ${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  const startTime = () => {
-    if (intervalRef.current !== null) return;
+  const [isRunning, setIsRunning] = useState(false);
 
-    intervalRef.current = setInterval(() => {
-      counter.current += 100;
-      setTime(counter.current);
-    }, 100); // 100ms for stability and test friendliness
-  };
+const startTime = () => {
+  if (intervalRef.current !== null) return;
 
-  const stopTime = () => {
-    clearInterval(intervalRef.current);
-    intervalRef.current = null;
-  };
+  intervalRef.current = setInterval(() => {
+    counter.current += 100;
+    setTime(counter.current);
+  }, 100);
+  setIsRunning(true);
+};
+
+const stopTime = () => {
+  clearInterval(intervalRef.current);
+  intervalRef.current = null;
+  setIsRunning(false);
+};
+
 
   const resetTime = () => {
     clearInterval(intervalRef.current);
     intervalRef.current = null;
     counter.current = 0;
     setTime(0);
+    setIsRunning(false);
   };
 
   return (
@@ -39,12 +45,14 @@ function App() {
       <h1>Stopwatch</h1>
       <p>{formatTime(time)}</p>
 
-      <button onClick={startTime} disabled={intervalRef.current !== null}>
-        Start
-      </button>
-      <button onClick={stopTime} disabled={intervalRef.current === null}>
-        Stop
-      </button>
+    
+        {isRunning ? (
+  <button type="button" onClick={stopTime}>Stop</button>
+) : (
+  <button type="button" onClick={startTime}>Start</button>
+)}
+
+      
       <button onClick={resetTime}>Reset</button>
     </>
   );
