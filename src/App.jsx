@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import "./App.css";
 
 function App() {
-  const [time, setTime] = useState(0);
+  const [time, setTime] = useState(0.00);
   const counter = useRef(0);
 
   let resetInterval = useRef(null);
@@ -18,7 +18,7 @@ function App() {
   const resetTime = () => {
     clearInterval(resetInterval.current);
     resetInterval.current=null;
-    setTime(0);
+    setTime(0.00);
     counter.current = 0;
 
   };
